@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -19,14 +20,35 @@ public class PatientController {
     }
     @CrossOrigin(origins = "*")
     @PostMapping(path = "/add", consumes = "application/json", produces = "application/json")
-    public String addPage(@RequestBody PatientModel p){
+    public HashMap<String,String> addPage(@RequestBody PatientModel p){
         dao.save(p);
-        return "success";
+        HashMap<String,String > map = new HashMap<>();
+        map.put("status","success");
+        return map;
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/view")
     public List<PatientModel> viewPage(){
         return (List<PatientModel>) dao.findAll();
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(path = "/search", consumes = "application/json", produces = "application/json")
+    public List<PatientModel> searchPage(@RequestBody PatientModel p){
+        return (List<PatientModel>) dao.searchPatient(p.getPatientCode());
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(path = "/delete", consumes = "application/json", produces = "application/json")
+    public HashMap<String,String> delete(@RequestBody PatientModel p){
+        if(p.getId() == 0)
+        {
+            System.out.println(p.getId());
+        }
+        dao.deletePatient(p.getId());
+        HashMap<String,String > map = new HashMap<>();
+        map.put("status","success");
+        return map;
     }
 }
